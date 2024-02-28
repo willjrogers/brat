@@ -9,13 +9,14 @@ Version:    2011-10-03
 from os import close as os_close
 from os import remove
 from os.path import join as path_join
-from os.path import basename, dirname, normpath
+from os.path import basename, dirname, normpath, abspath
 from subprocess import Popen
 from tempfile import mkstemp
 
 from annotation import open_textfile
 from common import NoPrintJSONError
 from document import real_directory
+from config import DATA_DIR
 
 try:
     pass
@@ -27,7 +28,11 @@ def download_file(document, collection, extension):
     directory = collection
     real_dir = real_directory(directory)
     fname = '%s.%s' % (document, extension)
-    fpath = path_join(real_dir, fname)
+    fpath = abspath(path_join(real_dir, fname))
+
+    if not fpath.startswith(abspath(DATA_DIR)):
+        print("Invalid path, path is not in DATA_DIR")
+        return
 
     hdrs = [('Content-Type', 'text/plain; charset=utf-8'),
             ('Content-Disposition',
@@ -58,6 +63,12 @@ def find_in_directory_tree(directory, filename):
 def download_collection(collection, include_conf=False):
     directory = collection
     real_dir = real_directory(directory)
+
+    # just abort if absolute path is not in DATA_DIR
+    if not abspath(real_dir).startswith(abspath(DATA_DIR)):
+        print('directory is not under DATA_DIR')
+        return
+
     dir_name = basename(dirname(real_dir))
     fname = '%s.%s' % (dir_name, 'tar.gz')
 
