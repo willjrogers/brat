@@ -338,7 +338,6 @@ def __argparser():
 
 def main(argv):
     import sys
-    import codecs
 
     arg = __argparser().parse_args(argv[1:])
 
@@ -361,7 +360,7 @@ def main(argv):
 
     for fn in arg.files:
         try:
-            with codecs.open(fn, encoding=INPUT_ENCODING) as f:
+            with open(fn, encoding=INPUT_ENCODING) as f:
                 for l in f:
                     t = tokenize(
                         l,

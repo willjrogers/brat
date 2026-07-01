@@ -118,7 +118,6 @@
 
 from __future__ import with_statement
 
-from codecs import open as codecs_open
 from itertools import chain, takewhile
 from os import close as os_close
 from os import access, W_OK
@@ -360,11 +359,8 @@ class SpanOffsetOverlapError(AnnotationError):
 
 # Open function that enforces strict, utf-8, and universal newlines for reading
 # TODO: Could have another wrapping layer raising an appropriate AnnotationError
-def open_textfile(filename, mode='rU'):
-    # enforce universal newline support ('U') in read modes
-    if len(mode) != 0 and mode[0] == 'r' and 'U' not in mode:
-        mode = mode + 'U'
-    return codecs_open(filename, mode, encoding='utf8', errors='strict')
+def open_textfile(filename, mode='r'):
+    return open(filename, mode, encoding='utf8', errors='strict')
 
 
 def __split_annotation_id(id):

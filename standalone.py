@@ -10,11 +10,10 @@
 import os
 import socket
 import sys
-from cgi import FieldStorage
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from posixpath import normpath
 from socketserver import ForkingMixIn
-from urllib.parse import unquote
+from urllib.parse import unquote, parse_qs
 
 
 # brat imports
@@ -147,6 +146,32 @@ class BratHTTPRequestHandler(SimpleHTTPRequestHandler):
             return True
         else:
             return False
+        
+    def read_params(self, environ):
+        """Read POST parameters"""
+        # 1. Verify it is a POST request
+        if environ.get('REQUEST_METHOD') != 'POST':
+            return {}
+
+        # 2. Get the content length safely
+        try:
+            content_length = int(environ.get('CONTENT_LENGTH', 0))
+        except ValueError:
+            content_length = 0
+
+        # 3. Read the exact number of bytes from the input stream
+        if content_length <= 0:
+            return {}
+        post_data = self.rfile.read(content_length)
+
+        # 4. Decode bytes to string
+        post_string = post_data.decode('utf-8')
+
+        # 5. Parse form parameters into a Python dictionary
+        # parse_qs returns dict values as lists (e.g., {'username': ['alice']})
+        post_params = parse_qs(post_string)
+        return post_params
+
 
     def run_brat_direct(self):
         """Execute brat server directly."""
@@ -173,7 +198,7 @@ class BratHTTPRequestHandler(SimpleHTTPRequestHandler):
         if query_string:
             env['QUERY_STRING'] = query_string
         os.environ.update(env)
-        params = FieldStorage(fp=self.rfile)
+        params = self.read_params(env)
 
         # Call main server
         cookie_hdrs, response_data = serve(params, remote_addr, remote_host,

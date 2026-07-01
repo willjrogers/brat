@@ -8,7 +8,7 @@ Author:     Pontus Stenetorp    <pontus is s u-tokyo ac jp>
 Version:    2011-04-21
 """
 
-from inspect import getargspec
+from inspect import getfullargspec as getargspec
 from logging import info as log_info
 from os.path import join as path_join
 from os.path import abspath, normpath
@@ -274,7 +274,7 @@ def dispatch(http_args, client_ip, client_hostname):
         raise InvalidActionError(action)
 
     # Determine what arguments the action function expects
-    args, varargs, keywords, defaults = getargspec(action_function)
+    args, varargs, keywords, defaults, kwonlyargs, kwonlydefaults, annotations = getargspec(action_function)
     # We will not allow this for now, there is most likely no need for it
     assert varargs is None, 'no varargs for action functions'
     assert keywords is None, 'no keywords for action functions'

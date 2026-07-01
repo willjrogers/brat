@@ -135,7 +135,6 @@ def refine_split(s):
 
 if __name__ == "__main__":
     import sys
-    import codecs
 
     # for testing, read stdin if no args
     if len(sys.argv) == 1:
@@ -143,7 +142,7 @@ if __name__ == "__main__":
 
     for fn in sys.argv[1:]:
         try:
-            with codecs.open(fn, encoding=INPUT_ENCODING) as f:
+            with open(fn, encoding=INPUT_ENCODING) as f:
                 s = "".join(f.read())
                 sys.stdout.write(refine_split(s).encode(OUTPUT_ENCODING))
         except Exception as e:

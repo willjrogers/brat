@@ -193,7 +193,7 @@ def _safe_serve(params, client_ip, client_hostname, cookie_data):
             # Also take the opportunity to convert Strings into Unicode,
             #   according to HTTP they should be UTF-8
             try:
-                http_args[k] = params.getvalue(k)
+                http_args[k] = params.get(k)[0]
             except TypeError as e:
                 # Messager.error(e)
                 Messager.error(
