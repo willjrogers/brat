@@ -310,7 +310,7 @@ var Util = (function(window, undefined) {
         return [parseInt(result[1]+result[1],16), parseInt(result[2]+result[2],16), parseInt(result[3]+result[3],16)];
       
       // Otherwise, we're most likely dealing with a named color
-      return colors[$.trim(color).toLowerCase()];
+      return colors[color.trim().toLowerCase()];
     }
 
     var rgbToStr = function(rgb) {
@@ -476,7 +476,7 @@ var Util = (function(window, undefined) {
       var len = val.length;
       var arr = [];
       for (var i = 0; i < len; i++) {
-        if ($.isArray(val[i])) {
+        if (Array.isArray(val[i])) {
           arr.push(val[i].join('~'));
         } else {
           // non-array argument; this is an error from the caller
@@ -498,7 +498,7 @@ var Util = (function(window, undefined) {
           }
           // values normally expected to be arrays, but some callers screw
           // up, so check
-          if ($.isArray(val)) {
+          if (Array.isArray(val)) {
             var arr = paramArray(val);
             vals.push(key + '=' + arr.join(','));
           } else {
@@ -793,4 +793,9 @@ function propWatch(obj, prop, displayFn, makeProxy) {
       window["_" + prop] = value;
     }
   });
+}
+
+
+fiunction isNumeric(val) {
+  return !isNaN(val) && !isNaN(parseFloat(val));
 }
