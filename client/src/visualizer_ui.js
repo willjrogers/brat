@@ -105,7 +105,7 @@ var VisualizerUI = (function($, window, undefined) {
       };
 
       var makeSortChangeFunction = function(sort, th, thNo) {
-          $(th).click(function() {
+          $(th).on("click", function() {
               // TODO: avoid magic numbers in access to the selector
               // data (column 0 is type, 1 is args, rest is data)
               if (sort[0] === thNo + 1) sort[1] = -sort[1];
@@ -173,15 +173,15 @@ var VisualizerUI = (function($, window, undefined) {
             if (delay === null) {
               var button = $('<input type="button" value="OK"/>');
               element.prepend(button);
-              button.click(function(evt) {
+              button.on("click", function(evt) {
                 timer = setTimeout(fader, 0);
               });
             } else {
               timer = setTimeout(fader, delay);
-              element.mouseover(function() {
+                element.on("mouseover", function() {
                   clearTimeout(timer);
                   element.show();
-              }).mouseout(function() {
+                }).on("mouseout", function() {
                   timer = setTimeout(fader, messagePostOutFadeDelay);
               });
             }
@@ -212,13 +212,13 @@ var VisualizerUI = (function($, window, undefined) {
       // hide pullup trigger by default, show on first message
       $('#pulluptrigger').hide();
       $('#pulluptrigger').
-        mouseenter(function(evt) {
+        on("mouseenter", function(evt) {
           $('#pulluptrigger').hide('puff');
           clearTimeout(pullupTimer);
           slideToggle($messagepullup.stop(), true, true, true);
         });
       $('#messagepullup').
-        mouseleave(function(evt) {
+        on("mouseleave", function(evt) {
           setTimeout(showPullupTrigger, 500);
           clearTimeout(pullupTimer);
           pullupTimer = setTimeout(function() {
@@ -556,7 +556,7 @@ var VisualizerUI = (function($, window, undefined) {
           buttons.push({
               id: formId + "-ok",
               text: "OK",
-              click: function() { form.submit(); }
+              click: function() { form.trigger("submit"); }
             });
         }
         if (opts.no_cancel) {
@@ -708,7 +708,7 @@ var VisualizerUI = (function($, window, undefined) {
       var docInputHandler = function(evt) {
         selectElementInTable('#document_select', $(this).val());
       };
-      $('#document_input').keyup(docInputHandler);
+        $('#document_input').on("keyup", docInputHandler);
 
       var fileBrowserSubmit = function(evt) {
         var _coll, _doc, _args, found;
@@ -722,7 +722,7 @@ var VisualizerUI = (function($, window, undefined) {
           var pos = coll.substr(0, coll.length - 1).lastIndexOf('/');
           if (pos === -1) {
             dispatcher.post('messages', [[['At the root', 'error', 2]]]);
-            $('#document_input').focus().select();
+            $('#document_input').trigger("focus").trigger("select");
             return false;
           } else {
             _coll = coll.substr(0, pos + 1);
@@ -743,7 +743,7 @@ var VisualizerUI = (function($, window, undefined) {
           }
         } else {
           dispatcher.post('messages', [[['Invalid document name format', 'error', 2]]]);
-          $('#document_input').focus().select();
+          $('#document_input').trigger("focus").trigger("select");
         }
         docScroll = $('#document_select')[0].scrollTop;
         fileBrowser.find('#document_select tbody').empty();
@@ -775,8 +775,8 @@ var VisualizerUI = (function($, window, undefined) {
         return false;
       };
       fileBrowser.
-          submit(fileBrowserSubmit).
-          bind('reset', hideForm);
+          on("submit", fileBrowserSubmit).
+          on('reset', hideForm);
 
       var fileBrowserWaiting = false;
       var showFileBrowser = function() {
@@ -880,8 +880,8 @@ var VisualizerUI = (function($, window, undefined) {
         tbody = $('#document_select tbody').html(html);
         $('#document_select')[0].scrollTop = docScroll;
         tbody.find('tr').
-            click(chooseDocument).
-            dblclick(chooseDocumentAndSubmit);
+            on("click", chooseDocument).
+            on("dblclick", chooseDocumentAndSubmit);
 
         $('#document_select thead tr *').each(function(thNo, th) {
             makeSortChangeFunction(sortOrder, th, thNo);
@@ -910,10 +910,10 @@ var VisualizerUI = (function($, window, undefined) {
 
         selectElementInTable($('#document_select'), doc, args.matchfocus);
         setTimeout(function() {
-          $('#document_input').focus().select();
+          $('#document_input').trigger("focus").trigger("select");
         }, 0);
       }; // end showFileBrowser()
-      $('#collection_browser_button').click(function(evt) {
+        $('#collection_browser_button').on("click", function(evt) {
         dispatcher.post('clearSearch');
       });
 
@@ -1061,7 +1061,7 @@ var VisualizerUI = (function($, window, undefined) {
 
       // When event type changes, the event roles do as well
       // Also, put in one empty role row
-      $('#search_form_event_type').change(function(evt) {
+        $('#search_form_event_type').on("change", function(evt) {
         var $roles = $('#search_form_event_roles').empty();
         searchEventRoles = [];
         var eventType = spanTypes[$(this).val()];
@@ -1074,7 +1074,7 @@ var VisualizerUI = (function($, window, undefined) {
       });
 
       // when relation changes, change choices of arg1 type
-      $('#search_form_relation_type').change(function(evt) {
+        $('#search_form_relation_type').on("change", function(evt) {
         var relTypeType = $(this).val();
         var $arg1 = $('#search_form_relation_arg1_type').
             html('<option value="">- Any -</option>');
@@ -1091,14 +1091,14 @@ var VisualizerUI = (function($, window, undefined) {
             });
           }
         });
-        $('#search_form_relation_arg1_type').change();
+            $('#search_form_relation_arg1_type').trigger("change");
         // style the selects
         $arg1.addClass('ui-widget ui-state-default ui-button-text');
         $arg2.addClass('ui-widget ui-state-default ui-button-text');
       });
 
       // when arg1 type changes, change choices of arg2 type
-      $('#search_form_relation_arg1_type').change(function(evt) {
+        $('#search_form_relation_arg1_type').on("change", function(evt) {
         var $arg2 = $('#search_form_relation_arg2_type').
             html('<option value="">- Any -</option>');
         var relType = $('#search_form_relation_type').val();
@@ -1120,7 +1120,7 @@ var VisualizerUI = (function($, window, undefined) {
         }
       });
 
-      $('#search_form_note_category').change(function(evt) {
+        $('#search_form_note_category').on("change", function(evt) {
         var category = $(this).val();
         var $type = $('#search_form_note_type');
         if ($.inArray(category, ['entity', 'event', 'relation']) != -1) {
@@ -1141,7 +1141,7 @@ var VisualizerUI = (function($, window, undefined) {
       } else {
         $('#context_size_div').hide("highlight");
       }
-      $('#concordancing input[type="radio"]').change(function() {
+        $('#concordancing input[type="radio"]').on("change", function() {
         if ($('#concordancing_on').is(':checked')) {
           $('#context_size_div').show("highlight");
         } else {
@@ -1151,7 +1151,7 @@ var VisualizerUI = (function($, window, undefined) {
       $('#search_options div.advancedOptions').hide("highlight");
       // set up advanced search options; only visible is clicked
       var advancedSearchOptionsVisible = false;
-      $('#advanced_search_option_toggle').click(function(evt) {
+        $('#advanced_search_option_toggle').on("click", function(evt) {
         if (advancedSearchOptionsVisible) {
           $('#search_options div.advancedOptions').hide("highlight");
           $('#advanced_search_option_toggle').text("Show advanced");
@@ -1175,22 +1175,22 @@ var VisualizerUI = (function($, window, undefined) {
         var action = activeSearchTab();
         switch (action) {
           case 'searchText':
-            $('#search_form_text_text').focus().select();
+            $('#search_form_text_text').trigger("focus").trigger("select");
             break;
           case 'searchEntity':
-            $('#search_form_entity_text').focus().select();
+            $('#search_form_entity_text').trigger("focus").trigger("select");
             break;
           case 'searchEvent':
-            $('#search_form_event_trigger').focus().select();
+            $('#search_form_event_trigger').trigger("focus").trigger("select");
             break;
           case 'searchRelation':
-            $('#search_form_relation_type').focus().select();
+            $('#search_form_relation_type').trigger("focus").trigger("select");
             break;
           case 'searchNote':
-            $('#search_form_note_text').focus().select();
+            $('#search_form_note_text').trigger("focus").trigger("select");
             break;
           case 'searchLoad':
-            $('#search_form_load_file').focus().select();
+            $('#search_form_load_file').trigger("focus").trigger("select");
             break;
         }
       };
@@ -1199,7 +1199,7 @@ var VisualizerUI = (function($, window, undefined) {
       $('#search_tabs').tabs({
         show: onSearchTabSelect
       });
-      $('#search_form').find('.radio_group').buttonset();
+      $('#search_form').find('.radio_group').controlgroup();
 
       var applySearchResults = function(response) {
         if (!searchActive) {
@@ -1302,7 +1302,7 @@ var VisualizerUI = (function($, window, undefined) {
         return false;
       };
 
-      $('#search_form_load_file').change(function(evt) {
+        $('#search_form_load_file').on("change", function(evt) {
         var $file = $('#search_form_load_file');
         var file = $file[0].files[0];
         var reader = new FileReader();
@@ -1322,7 +1322,7 @@ var VisualizerUI = (function($, window, undefined) {
         reader.readAsText(file);
       });
 
-      searchForm.submit(searchFormSubmit);
+      searchForm.on("submit", searchFormSubmit);
 
       initForm(searchForm, {
           width: 500,
@@ -1337,13 +1337,13 @@ var VisualizerUI = (function($, window, undefined) {
       var showSearchForm = function() {
         // this.checked = searchActive; // TODO: dup? unnecessary? remove if yes.
         updateSearchButtons();
-        $('#search_form_event_type').change();
-        $('#search_form_relation_type').change();
+        $('#search_form_event_type').trigger("change");
+          $('#search_form_relation_type').trigger("change");
         dispatcher.post('showForm', [searchForm]);
         onSearchTabSelect();
       }
 
-      $('#search_button').click(showSearchForm);
+        $('#search_button').on("click", showSearchForm);
 
       var clearSearchResults = function() {
         // clear UI, don't show collection browser
@@ -1354,7 +1354,7 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post('setArguments', [{}, true]);
       }
 
-      $('#clear_search_button').click(clearSearchResults);
+        $('#clear_search_button').on("click", clearSearchResults);
 
       var updateSearchButtons = function() {
         $searchButton = $('#search_button');
@@ -1384,7 +1384,7 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post('hideForm');
         return false;
       };
-      dataForm.submit(dataFormSubmit);
+      dataForm.on("submit", dataFormSubmit);
       initForm(dataForm, {
           width: 500,
           resizable: false,
@@ -1405,7 +1405,7 @@ var VisualizerUI = (function($, window, undefined) {
             }
           }
       });
-      $('#data_button').click(function() {
+      $('#data_button').on("click", function() {
         dispatcher.post('showForm', [dataForm]);
       });
       // make nice-looking buttons for checkboxes and buttons
@@ -1415,7 +1415,7 @@ var VisualizerUI = (function($, window, undefined) {
       // resize invalidates stored visualization (SVG etc.); add a
       // button to regen
       $('#stored_file_regenerate').button().hide();
-      $('#stored_file_regenerate').click(function(evt) {
+      $('#stored_file_regenerate').on("click", function(evt) {
         $('#stored_file_regenerate').hide();
         saveSVG();
       });
@@ -1430,7 +1430,7 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post('hideForm');
         return false;
       };
-      optionsForm.submit(optionsFormSubmit);
+      optionsForm.on("submit", optionsFormSubmit);
       initForm(optionsForm, {
           width: 550,
           resizable: false,
@@ -1439,15 +1439,16 @@ var VisualizerUI = (function($, window, undefined) {
             keymap = {};
           }
       });
-      $('#options_button').click(function() {
+      $('#options_button').on("click", function() {
         dispatcher.post('showForm', [optionsForm]);
       });
       // make nice-looking buttons for checkboxes and radios
       $('#options_form').find('input[type="checkbox"], input[type="button"]').button();
-      $('#options_form').find('.radio_group').buttonset();
+      $('#options_form').find('.radio_group').controlgroup();
       $('#rapid_model').addClass('ui-widget ui-state-default ui-button-text');
 
       var fillDisambiguatorOptions = function(disambiguators) {
+        $('#annotation_speed3').button()
         $('#annotation_speed3').button(disambiguators.length ? 'enable': 'disable');
         //XXX: We need to disable rapid in the conf too if it is not available
         var $rapid_mode = $('#rapid_model').html('');
@@ -1467,7 +1468,7 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post('hideForm');
         return false;
       };
-      moreInfoDialog.submit(moreInfoDialogSubmit);
+      moreInfoDialog.on("submit", moreInfoDialogSubmit);
       initForm(moreInfoDialog, {
           width: 500,
           no_cancel: true,
@@ -1476,7 +1477,7 @@ var VisualizerUI = (function($, window, undefined) {
           },
           alsoResize: '#more_info_readme',
       });
-      $('#more_readme_button').click(function() {
+      $('#more_readme_button').on("click", function() {
         dispatcher.post('showForm', [moreInfoDialog]);
       });
 
@@ -1745,7 +1746,7 @@ var VisualizerUI = (function($, window, undefined) {
         }
       }
 
-      $('#source_collection_conf').buttonset();
+      $('#source_collection_conf').controlgroup();
 
       var gotCurrent = function(_coll, _doc, _args) {
         var oldColl = coll;
@@ -1841,18 +1842,18 @@ var VisualizerUI = (function($, window, undefined) {
 
       var menuTimer = null;
       $('#header').
-        mouseenter(function(evt) {
+        on("mouseenter", function(evt) {
           clearTimeout(menuTimer);
           slideToggle($('#pulldown').stop(), true);
         }).
-        mouseleave(function(evt) {
+        on("mouseleave", function(evt) {
           clearTimeout(menuTimer);
           menuTimer = setTimeout(function() {
             slideToggle($('#pulldown').stop(), false);
           }, 500);
         });
 
-      $('#label_abbreviations input').click(function(evt) {
+      $('#label_abbreviations input').on("click", function(evt) {
         var val = this.value;
         val = val === 'on';
         if (val) {
@@ -1869,14 +1870,14 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post(1, 'resetData');
       });
 
-      $('#text_backgrounds input').click(function(evt) {
+      $('#text_backgrounds input').on("click", function(evt) {
         var val = this.value;
         dispatcher.post('textBackgrounds', [val]);
         // TODO: XXX: see comment above for why this is asynchronous
         dispatcher.post(1, 'resetData');
       });
 
-      $('#layout_density input').click(function(evt) {
+      $('#layout_density input').on("click", function(evt) {
         var val = this.value;
         dispatcher.post('layoutDensity', [val]);
         // TODO: XXX: see comment above for why this is asynchronous
@@ -1884,7 +1885,7 @@ var VisualizerUI = (function($, window, undefined) {
         return false;
       });
 
-      $('#svg_width_unit input').click(function(evt) {
+      $('#svg_width_unit input').on("click", function(evt) {
         var width_unit = this.value;
         var width_value = $('#svg_width_value')[0].value;
         var val = width_value+width_unit;
@@ -1894,7 +1895,7 @@ var VisualizerUI = (function($, window, undefined) {
         return false;
       });
 
-      $('#annotation_speed input').click(function(evt) {
+      $('#annotation_speed input').on("click", function(evt) {
         var val = this.value;
         dispatcher.post('annotationSpeed', [val]);
         return false;
@@ -1910,13 +1911,13 @@ var VisualizerUI = (function($, window, undefined) {
             resizable: false,
             modal: true,
             open: function() {
-              aboutDialog.find('*').blur();
+              aboutDialog.find('*').trigger("blur");
             },
             beforeClose: function() {
               currentForm = null;
             }
           });
-      $('#mainlogo').click(function() {
+      $('#mainlogo').on("click", function() {
         showForm(aboutDialog);
       });
 
@@ -1951,11 +1952,11 @@ var VisualizerUI = (function($, window, undefined) {
           // annotator comments
           $('#viewspan_notes').val(span.annotatorNotes || '');
           dispatcher.post('showForm', [viewspanForm]);
-          $('#viewspan_form-ok').focus();
+          $('#viewspan_form-ok').trigger("focus");
           adjustFormToCursor(evt, viewspanForm.parent());
         }
       };
-      viewspanForm.submit(function(evt) {
+      viewspanForm.on("submit", function(evt) {
         dispatcher.post('hideForm');
         return false;
       });
@@ -1974,7 +1975,7 @@ var VisualizerUI = (function($, window, undefined) {
           function(response) {
               if (response.exception) {
                 dispatcher.post('showForm', [authForm]);
-                $('#auth_user').select().focus();
+                $('#auth_user').trigger("select").trigger("focus");
               } else {
                 user = _user;
                 $('#auth_button').val('Logout ' + user);
@@ -1986,7 +1987,7 @@ var VisualizerUI = (function($, window, undefined) {
           }]);
         return false;
       };
-      $('#auth_button').click(function(evt) {
+      $('#auth_button').on("click", function(evt) {
         if (user) {
           dispatcher.post('ajax', [{
             action: 'logout'
@@ -2000,7 +2001,7 @@ var VisualizerUI = (function($, window, undefined) {
           dispatcher.post('showForm', [authForm]);
         }
       });
-      authForm.submit(authFormSubmit);
+      authForm.on("submit", authFormSubmit);
 
 
       var tutorialForm = $('#tutorial');
@@ -2054,7 +2055,7 @@ var VisualizerUI = (function($, window, undefined) {
               // don't show tutorial if there's a specific document (annoyance)
               if (!doc) {
                 dispatcher.post('showForm', [tutorialForm]);
-                $('#tutorial-ok').focus();
+                $('#tutorial-ok').trigger("focus");
               }
             }
           },
@@ -2206,7 +2207,7 @@ var VisualizerUI = (function($, window, undefined) {
         checkForDocumentChanges();
       }
 
-      $('#autorefresh_mode').click(function(evt) {
+      $('#autorefresh_mode').on("click", function(evt) {
         var val = this.checked;
         if (val) {
           Configuration.autorefreshOn = true;
@@ -2220,20 +2221,20 @@ var VisualizerUI = (function($, window, undefined) {
         dispatcher.post('configurationChanged');
       });
 
-      $('#type_collapse_limit').change(function(evt) {
+      $('#type_collapse_limit').on("change", function(evt) {
         Configuration.typeCollapseLimit = parseInt($(this).val(), 10) || 0;
         dispatcher.post('configurationChanged');
       });
 
-      $('#paging_size').change(function(evt) {
+      $('#paging_size').on("change", function(evt) {
         Configuration.pagingSize = parseInt($(this).val(), 10) || 0;
         dispatcher.post('configurationChanged');
       });
-      $('#paging_step').change(function(evt) {
+      $('#paging_step').on("change", function(evt) {
         Configuration.pagingStep = parseInt($(this).val(), 10) || 0;
         dispatcher.post('configurationChanged');
       });
-      $('#paging_clear').click(function(evt) {
+      $('#paging_clear').on("click", function(evt) {
         Configuration.pagingSize = 0;
         Configuration.pagingStep = 0;
         $('#paging_step, #paging_size').val('');
@@ -2269,15 +2270,18 @@ var VisualizerUI = (function($, window, undefined) {
         } else {
           $('#annotation_speed2')[0].checked = true;
         }
+        $('#annotation_speed input').button();
         $('#annotation_speed input').button('refresh');
 
         // Label abbrevs
         $('#label_abbreviations_on')[0].checked  = Configuration.abbrevsOn;
         $('#label_abbreviations_off')[0].checked = !Configuration.abbrevsOn; 
+        $('#label_abbreviations input').button();
         $('#label_abbreviations input').button('refresh');
 
         // Text backgrounds        
         $('#text_backgrounds input[value="'+Configuration.textBackgrounds+'"]')[0].checked = true;
+        $('#text_backgrounds input').button();
         $('#text_backgrounds input').button('refresh');
 
         // SVG width
@@ -2288,11 +2292,13 @@ var VisualizerUI = (function($, window, undefined) {
         } else {
           $('#svg_width_value')[0].value = splitSvgWidth[1];
           $('#svg_width_unit input[value="'+splitSvgWidth[2]+'"]')[0].checked = true;
+          $('#svg_width_unit input').button();
           $('#svg_width_unit input').button('refresh');
         }
 
         // Autorefresh
         $('#autorefresh_mode')[0].checked = Configuration.autorefreshOn;
+        $('#autorefresh_mode').button();
         $('#autorefresh_mode').button('refresh');
 
         // Type Collapse Limit
@@ -2303,15 +2309,15 @@ var VisualizerUI = (function($, window, undefined) {
         $('#paging_step')[0].value = Configuration.pagingStep || '';
       }
 
-      $('#prev').button().click(function() {
+      $('#prev').button().on("click", function() {
         return moveInFileBrowser(-1);
       });
-      $('#next').button().click(function() {
+      $('#next').button().on("click", function() {
         return moveInFileBrowser(+1);
       });
       $('#footer').show();
 
-      $('#source_collection_conf_on, #source_collection_conf_off').change(function() {
+      $('#source_collection_conf_on, #source_collection_conf_off').on("change", function() {
         var conf = $('#source_collection_conf_on').is(':checked') ? 1 : 0;
         var $source_collection_link = $('#source_collection a');
         var link = $source_collection_link.attr('href').replace(/&include_conf=./, '&include_conf=' + conf);

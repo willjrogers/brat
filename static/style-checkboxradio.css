@@ -1,0 +1,31 @@
+/* Hide the default radio button visually but keep it focusable */
+input[type="radio"].ui-helper-hidden-accessiblee {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+div.nodot label.ui-checkboxradio-checked .ui-icon-background {
+  border: 0 solid #aaaaaa;
+  background-color: #aaaaaa;
+  width: 16px;
+  height: 16px;
+}
+
+.ui-icon-blank {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Hide the Box Completely (For Toggle Buttons/Labels) */
+input[type="checkbox"].ui-button {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}

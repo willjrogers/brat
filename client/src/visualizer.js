@@ -1352,8 +1352,8 @@ var Visualizer = (function($, window, undefined) {
         var width = 5;
         var height = 5;
         var color = "black";
-        if ($.isNumeric(parsedSpec[1]) && parsedSpec[2]) {
-          if ($.isNumeric(parsedSpec[2]) && parsedSpec[3]) {
+        if (isNumeric(parsedSpec[1]) && parsedSpec[2]) {
+          if (isNumeric(parsedSpec[2]) && parsedSpec[3]) {
             // 3 args, 2 numeric: assume width, height, color
             width = parsedSpec[1];
             height = parsedSpec[2];
@@ -3397,7 +3397,7 @@ Util.profileStart('before render');
       // register event listeners
       var registerHandlers = function(element, events) {
         $.each(events, function(eventNo, eventName) {
-            element.bind(eventName,
+            element.on(eventName,
               function(evt) {
                 dispatcher.post(eventName, [evt], 'all');
               }

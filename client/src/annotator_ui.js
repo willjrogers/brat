@@ -143,7 +143,7 @@ var AnnotatorUI = (function($, window, undefined) {
           var idx = String.fromCharCode(code);
           var $input = $('#rapid_span_'+idx);
           if ($input.length) {
-            $input.click();
+            $input.on("click");
           }
         }
 
@@ -233,7 +233,7 @@ var AnnotatorUI = (function($, window, undefined) {
         if (binding) {
           var boundInput = $('#' + binding)[0];
           if (boundInput && !boundInput.disabled) {
-            boundInput.click();
+            boundInput.on("click");
             evt.preventDefault();
             return false;
           }
@@ -864,14 +864,14 @@ var AnnotatorUI = (function($, window, undefined) {
                     updateCheckbox($input);
                     $input.button('refresh');
                   } else {
-                    $input.val(attr.default).change();
+                    $input.val(attr.default).trigger("change");
                   }
               } else if (attr.bool) {
                 $input[0].checked = false;
                 updateCheckbox($input);
                 $input.button('refresh');
               } else {
-                $input.val('').change();
+                  $input.val('').trigger("change");
               }
             });
           });
@@ -899,7 +899,7 @@ var AnnotatorUI = (function($, window, undefined) {
               updateCheckbox($input);
               $input.button('refresh');
             } else {
-              $input.val(val || '').change();
+              $input.val(val || '').trigger("change");
             }
           });
         }
@@ -971,7 +971,7 @@ var AnnotatorUI = (function($, window, undefined) {
           submitReselect();
         } else {
           dispatcher.post('showForm', [spanForm, true]);
-          //$('#span_form-ok').focus();
+          //$('#span_form-ok').trigger("focus");
           adjustToCursor(evt, spanForm.parent());
         }
 
@@ -1023,7 +1023,7 @@ var AnnotatorUI = (function($, window, undefined) {
       var submitReselect = function() {
         $(reselectedSpan.rect).removeClass('reselect');
         reselectedSpan = null;
-        spanForm.submit();
+        spanForm.trigger("submit");
       };
 
       var rapidFillSpanTypesAndDisplayForm = function(start, end, text, types) {
@@ -1101,7 +1101,7 @@ var AnnotatorUI = (function($, window, undefined) {
         $spanTypeDiv.append($content);
 
         // set up click event handlers
-        rapidSpanForm.find('#rapid_span_types input:radio').click(rapidSpanFormSubmitRadio);
+        rapidSpanForm.find('#rapid_span_types input:radio').on("click", rapidSpanFormSubmitRadio);
 
         var firstRadio = $('#rapid_span_form input:radio:first')[0];
         if (firstRadio) {
@@ -1113,7 +1113,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }
         dispatcher.post('showForm', [rapidSpanForm]);
         rapidAnnotationDialogVisible = true;
-        //$('#rapid_span_form-ok').focus();
+        //$('#rapid_span_form-ok').trigger("focus");
         // TODO: avoid using global for stored click event
 //         adjustToCursor(lastRapidAnnotationEvent, rapidSpanForm.parent(),
 //                        true, true);
@@ -1129,13 +1129,13 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#arc_notes').val('');
       }
       $('#clear_arc_notes_button').button();
-      $('#clear_arc_notes_button').click(clearArcNotes);
+      $('#clear_arc_notes_button').on("click", clearArcNotes);
 
       var clearSpanNotes = function(evt) {
         $('#span_notes').val('');
       }
       $('#clear_span_notes_button').button();
-      $('#clear_span_notes_button').click(clearSpanNotes);
+      $('#clear_span_notes_button').on("click", clearSpanNotes);
 
 
       var deleteNormalization = function(evt) {
@@ -1143,7 +1143,7 @@ var AnnotatorUI = (function($, window, undefined) {
         var normalizations = normCurrent;
         normalizations.splice(selectedIndex, 1);
         updateNormalizationsList(normalizations);
-        $('#norm_list_dialog-ok').focus();
+        $('#norm_list_dialog-ok').trigger("focus");
       };
       var startNormalizationSearch = function(editedIndex) {
         normEditedIndex = editedIndex;
@@ -1175,7 +1175,7 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#norm_delete').show();
         $('#norm_edit').toggle(allowed);
       });
-      normListDialog.submit(normListDialogSubmit);
+      normListDialog.on("submit", normListDialogSubmit);
       dispatcher.post('initForm', [normListDialog, {
           width: 600,
           width: 400,
@@ -1204,7 +1204,7 @@ var AnnotatorUI = (function($, window, undefined) {
             $('#norm_delete, #norm_edit').hide();
             $('#norm_add').toggle(normAllowedNormalizations && normAllowedNormalizations.length > 0);
             normEditedIndex = undefined;
-            $('#norm_list_dialog-ok').focus();
+            $('#norm_list_dialog-ok').trigger("focus");
           },
           close: function(evt) {
             // assume that we always want to return to the span dialog
@@ -1228,14 +1228,14 @@ var AnnotatorUI = (function($, window, undefined) {
         return false;
       }
       $('#norm_list_button').button();
-      $('#norm_list_button').click(openNormList);
+      $('#norm_list_button').on("click", openNormList);
 
       var startNormQuickAdd = function(evt) {
         startNormalizationSearch(false); // go directly back to span dialog later
         return false;
       }
       $('#norm_qadd_button').button();
-      $('#norm_qadd_button').click(startNormQuickAdd);
+      $('#norm_qadd_button').on("click", startNormQuickAdd);
 
       // invoked on response to ajax request for id lookup
       var setNormText = function(response) {
@@ -1277,13 +1277,13 @@ var AnnotatorUI = (function($, window, undefined) {
         }
       };
       // see http://stackoverflow.com/questions/1948332/detect-all-changes-to-a-input-type-text-immediately-using-jquery
-      $('#norm_search_id').bind('propertychange keyup input paste', normIdUpdate);
+      $('#norm_search_id').on('propertychange keyup input paste', normIdUpdate);
       var normQueryUpdate = function(evt) {
         oldNormIdValue = '';
         $('#norm_search_id').val('');
         setNormSearchSubmit(false);
       };
-      $('#norm_search_query').bind('propertychange keyup input paste', normQueryUpdate);
+      $('#norm_search_query').on('propertychange keyup input paste', normQueryUpdate);
 
       var normSearchDialog = $('#norm_search_dialog');
       initForm(normSearchDialog, {
@@ -1313,7 +1313,7 @@ var AnnotatorUI = (function($, window, undefined) {
             }
             updateNormDbLink();
             $('#norm_search_result_select > tbody').empty();
-            $('#norm_search_query').focus();
+            $('#norm_search_query').trigger("focus");
           },
           close: function(evt) {
             // we want to go back to span dialog if quick-add,
@@ -1327,7 +1327,7 @@ var AnnotatorUI = (function($, window, undefined) {
           },
       });
       $('#norm_search_query, #norm_search_id').on('focus', function(evt) {
-        $(this).select();
+        $(this).trigger("select");
       });
       $('#norm_search_query').autocomplete({
         source: function(request, callback) {
@@ -1410,7 +1410,7 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#norm_search_dialog-ok').button(enable ? 'enable' : 'disable');
         normSearchSubmittable = enable;
       };
-      normSearchDialog.submit(normSearchSubmit);
+      normSearchDialog.on("submit", normSearchSubmit);
       var chooseNormId = function(evt) {
         var $element = $(evt.target).closest('tr');
         $('#norm_search_result_select .selected').removeClass('selected');
@@ -1468,8 +1468,8 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#norm_search_result_select tbody').html(html.join(''));
 
         $('#norm_search_result_select tbody').find('tr').
-            click(chooseNormId).
-            dblclick(chooseNormIdAndSubmit);
+            on("click", chooseNormId).
+            on("dblclick", chooseNormIdAndSubmit);
 
         $('#norm_search_id').val('');
         setNormSearchSubmit(false);
@@ -1484,7 +1484,7 @@ var AnnotatorUI = (function($, window, undefined) {
                         name: val,
                         collection: coll}, 'normSearchResult']);
       }
-      $('#norm_search_button').click(performNormSearch).button();
+      $('#norm_search_button').on("click", performNormSearch).button();
       var updateNormDbLink = function() {
         var db = $('#norm_db_choice').val();
         var link = normDbUrlByDbName[db];
@@ -1496,7 +1496,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }
       }
       $('#norm_db_link').hide();
-      $('#norm_db_choice').addClass('ui-widget ui-state-default ui-button-text').change(updateNormDbLink);
+      $('#norm_db_choice').addClass('ui-widget ui-state-default ui-button-text').on("change", updateNormDbLink);
 
       var arcFormSubmitRadio = function(evt) {
         // TODO: check for confirm_mode?
@@ -1677,7 +1677,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }
 
         if (!Configuration.confirmModeOn) {
-          arcForm.find('#arc_roles input:radio').click(arcFormSubmitRadio);
+          arcForm.find('#arc_roles input:radio').on("click", arcFormSubmitRadio);
         }
 
         var arcAnnotatorNotes;
@@ -1706,7 +1706,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }
 
         dispatcher.post('showForm', [arcForm]);
-        $('#arc_form-ok').focus();
+        $('#arc_form-ok').trigger("focus");
         adjustToCursor(evt, arcForm.parent());
       };
       
@@ -1758,7 +1758,7 @@ var AnnotatorUI = (function($, window, undefined) {
             keymap = null;
           }
         }]);
-      arcForm.submit(arcFormSubmit);
+      arcForm.on("submit", arcFormSubmit);
       // set button tooltips (@amadanmath: can this be done in init?)
       $('#arc_form_reselect').attr('title', 'Re-select the annotation this connects into.');
       $('#arc_form_delete').attr('title', 'Delete this annotation.');
@@ -2070,7 +2070,7 @@ var AnnotatorUI = (function($, window, undefined) {
         if (Configuration.confirmModeOn) {
           showValidAttributes();
           checkAllowedNormalizations();
-          $('#span_form-ok').focus();
+          $('#span_form-ok').trigger("focus");
         } else {
           spanFormSubmit(evt, $(evt.target));
         }
@@ -2172,7 +2172,7 @@ var AnnotatorUI = (function($, window, undefined) {
                            escapedName + '</label>');
             $span.append($input).append($label);
             $input.button();
-            $input.change(onBooleanAttrChange);
+            $input.on("change", onBooleanAttrChange);
           } else {
             // var $div = $('<div class="ui-button ui-button-text-only attribute_type_label"/>');
             $span.text(attr.name);
@@ -2186,7 +2186,7 @@ var AnnotatorUI = (function($, window, undefined) {
             });
             $span.append($select);
             $select.combobox();
-            $select.change(onMultiAttrChange);
+            $select.on("change", onMultiAttrChange);
           }
         });
       }
@@ -2289,8 +2289,8 @@ var AnnotatorUI = (function($, window, undefined) {
           $('#viewspan_search_fieldset').hide();
         }
 
-        spanForm.find('#entity_types input:radio').click(spanFormSubmitRadio);
-        spanForm.find('#event_types input:radio').click(spanFormSubmitRadio);
+        spanForm.find('#entity_types input:radio').on("click", spanFormSubmitRadio);
+        spanForm.find('#event_types input:radio').on("click", spanFormSubmitRadio);
       };
 
       var tagCurrentDocument = function(taggerId) {
@@ -2320,7 +2320,7 @@ var AnnotatorUI = (function($, window, undefined) {
           var $button = $('<input id="tag_'+Util.escapeHTML(taggerId)+'_button" type="button" value="'+Util.escapeHTML(taggerModel)+'" tabindex="-1" title="Automatically tag the current document."/>');
           $row.append($label).append($button);
           $taggerButtons.append($row);
-          $button.click(function(evt) {
+          $button.on("click", function(evt) {
             tagCurrentDocument(taggerId);
           });
         });
@@ -2394,7 +2394,7 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#norm_search_result_select thead, #norm_search_result_select tbody').empty();
       }
       // on any change to the normalization DB, clear everything
-      $('#norm_db_choice').change(clearNormalizationUI);
+      $('#norm_db_choice').on("change", clearNormalizationUI);
 
       // returns attributes that are valid for the selected type in
       // the span dialog
@@ -2519,7 +2519,7 @@ var AnnotatorUI = (function($, window, undefined) {
         return false;
       }
       var sentCommentForm = $('#sent_comment_form');
-      sentCommentForm.submit(function(evt) {
+      sentCommentForm.on("submit", function(evt) {
         var sentComment = $('#sent_comment_text').val()
         var id = 'sent:' + editedSentComment;
         var comment = $('#sent_comment_text').val();
@@ -2547,12 +2547,12 @@ var AnnotatorUI = (function($, window, undefined) {
               var comment = '';
               $('#sent_comment_form_delete').hide();
             }
-            $('#sent_comment_text').val(comment).focus().select();
+            $('#sent_comment_text').val(comment).trigger("focus").trigger("select");
           }
       });
 
       var splitForm = $('#split_form');
-      splitForm.submit(function(evt) {
+      splitForm.on("submit", function(evt) {
         var splitRoles = [];
         $('#split_roles input:checked').each(function() {
           splitRoles.push($(this).val());
@@ -2572,7 +2572,7 @@ var AnnotatorUI = (function($, window, undefined) {
           alsoResize: '.scroll_fset',
           width: 400,
           open: function() {
-            $('#split_form-ok').focus();
+            $('#split_form-ok').trigger("focus");
           }
         }]);
       var splitSpan = function() {
@@ -2585,7 +2585,7 @@ var AnnotatorUI = (function($, window, undefined) {
             '" value="' + Util.escapeQuotes(this) + '"/>');
           if (numRoles == 1) {
             // a single role will be selected automatically
-            $role.click();
+            $role.on("click");
           }
           var $label = $('<label for="split_on_' + Util.escapeQuotes(this) +
             '">' + Util.escapeQuotes(this) + '</label>');
@@ -2641,7 +2641,7 @@ var AnnotatorUI = (function($, window, undefined) {
         $('#unlock_type_button').toggle(locked);
         if (!locked) lockOptions = null;
       };
-      $('#unlock_type_button').button().hide().click(function(evt) {
+      $('#unlock_type_button').button().hide().on("click", function(evt) {
         setTypeLock(false);
       });
 
@@ -2686,8 +2686,8 @@ var AnnotatorUI = (function($, window, undefined) {
                 primary: 'ui-icon-unlocked'
               },
             });
-            $lock.click(spanChangeLock);
-            $($span).buttonset();
+            $lock.on("click", spanChangeLock);
+            $($span).controlgroup();
           },
           beforeClose: function(evt) {
             // in case the form is cancelled
@@ -2703,7 +2703,7 @@ var AnnotatorUI = (function($, window, undefined) {
           },
           open: function(evt) {
             normEditedIndex = undefined;
-            $('#span_form-ok').focus();
+            $('#span_form-ok').trigger("focus");
           }
         }]);
       // set button tooltips (@amadanmath: can this be done in init?)
@@ -2728,7 +2728,7 @@ var AnnotatorUI = (function($, window, undefined) {
       var spanFormSubmit = function(evt, typeRadio) {
         typeRadio = typeRadio || $('#span_form input:radio:checked');
         var type = typeRadio.val();
-        $('#span_form-ok').blur();
+        $('#span_form-ok').trigger("blur");
 
         var locked = $('#span_form_lock').is(':checked');
         if (locked && !lockOptions) {
@@ -2760,18 +2760,18 @@ var AnnotatorUI = (function($, window, undefined) {
 
         // unfocus all elements to prevent focus being kept after
         // hiding them
-        spanForm.parent().find('*').blur();
+        spanForm.parent().find('*').trigger("blur");
 
         $('#waiter').dialog('open');
         dispatcher.post('ajax', [spanOptions, 'edited']);
         return false;
       };
-      $('#span_notes').focus(function () {
+      $('#span_notes').on("focus", function () {
           keymap = null;
-        }).blur(function () {
+          }).on("blur", function () {
           keymap = spanKeymap;
         });
-      spanForm.submit(spanFormSubmit);
+      spanForm.on("submit", spanFormSubmit);
 
       var rapidSpanFormSubmit = function(evt, typeRadio) {
         typeRadio = typeRadio || $('#rapid_span_form input:radio:checked');
@@ -2779,7 +2779,7 @@ var AnnotatorUI = (function($, window, undefined) {
 
         // unfocus all elements to prevent focus being kept after
         // hiding them
-        rapidSpanForm.parent().find('*').blur();
+        rapidSpanForm.parent().find('*').trigger("blur");
         dispatcher.post('hideForm');
 
         if (type == "") {
@@ -2808,7 +2808,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }
         return false;
       };
-      rapidSpanForm.submit(rapidSpanFormSubmit);
+      rapidSpanForm.on("submit", rapidSpanFormSubmit);
 
       var importForm = $('#import_form');
       var importFormSubmit = function(evt) {
@@ -2835,7 +2835,7 @@ var AnnotatorUI = (function($, window, undefined) {
         }]);
         return false;
       };
-      importForm.submit(importFormSubmit);
+      importForm.on("submit", importFormSubmit);
       dispatcher.post('initForm', [importForm, {
           width: 500,
           alsoResize: '#import_text',
@@ -2843,7 +2843,7 @@ var AnnotatorUI = (function($, window, undefined) {
             keymap = {};
           },
         }]);
-      $('#import_button').click(function() {
+      $('#import_button').on("click", function() {
         dispatcher.post('hideForm');
         dispatcher.post('showForm', [importForm]);
         importForm.find('input, textarea').val('');
@@ -2863,14 +2863,14 @@ var AnnotatorUI = (function($, window, undefined) {
         }]);
         return false;
       };
-      importCollForm.submit(importCollFormSubmit);
+      importCollForm.on("submit", importCollFormSubmit);
       dispatcher.post('initForm', [importCollForm, {
           width: 500,
           open: function(evt) {
             keymap = {};
           },
         }]);
-      $('#import_collection_button').click(function() {
+      $('#import_collection_button').on("click", function() {
         dispatcher.post('hideForm');
         dispatcher.post('showForm', [importCollForm]);
         importCollForm.find('input').val('');
@@ -2879,7 +2879,7 @@ var AnnotatorUI = (function($, window, undefined) {
 
       /* BEGIN delete button - related */
 
-      $('#delete_document_button').click(function() {
+      $('#delete_document_button').on("click", function() {
         if (!doc) {
           dispatcher.post('messages', [[['No document selected', 'error']]]);
           return false;
@@ -2895,7 +2895,7 @@ var AnnotatorUI = (function($, window, undefined) {
         dispatcher.post('ajax', [delOptions, 'docDeleted']);
       });
 
-      $('#delete_collection_button').click(function() {
+      $('#delete_collection_button').on("click", function() {
         if (!coll) {
           dispatcher.post('messages', [[['No collection selected', 'error']]]);
           return false;
@@ -2912,7 +2912,7 @@ var AnnotatorUI = (function($, window, undefined) {
 
       /* END delete button - related */
 
-      $('#undo_button').click(function() {
+      $('#undo_button').on("click", function() {
         if (coll && doc) {
           if (undoStack.length > 0) {
             var storedUndo = undoStack.pop();

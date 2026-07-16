@@ -109,7 +109,7 @@ var URLMonitor = (function($, window, undefined) {
       }
 
       var init = function() {
-        $(window).bind('hashchange', updateState);
+        $(window).on('hashchange', updateState);
         forceUpdate();
       }
 
