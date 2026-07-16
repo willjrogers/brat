@@ -795,7 +795,6 @@ function propWatch(obj, prop, displayFn, makeProxy) {
   });
 }
 
-
-fiunction isNumeric(val) {
+function isNumeric(val) {
   return !isNaN(val) && !isNaN(parseFloat(val));
 }
