@@ -150,8 +150,11 @@ class BratHTTPRequestHandler(SimpleHTTPRequestHandler):
     def read_params(self, environ):
         """Read POST parameters"""
         # 1. Verify it is a POST request
-        if environ.get('REQUEST_METHOD') != 'POST':
-            return {}
+        if environ.get('REQUEST_METHOD') == 'GET':
+            if 'QUERY_STRING' in environ:
+                return parse_qs(environ.get('QUERY_STRING'))
+            else:
+                return {}
 
         # 2. Get the content length safely
         try:
